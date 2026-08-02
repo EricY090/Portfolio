@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Respect users who ask the OS to reduce motion. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-canvas font-sans text-body antialiased;
+  }
+
+  /* Visible, on-brand keyboard focus ring everywhere. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-canvas;
+  }
+
+  ::selection {
+    @apply bg-accent/30 text-heading;
+  }
+}
+
+@layer components {
+  /* ---------------------------------------------------------------------
+     Background treatments
+     Kept here rather than as inline arbitrary-value utilities so the
+     gradient stops stay legible and tunable in one place. All are purely
+     decorative and are rendered on aria-hidden layers.
+     --------------------------------------------------------------------- */
+
+  /* Accent wash behind the hero. Two warm teal sources plus a cooler cyan
+     one, so the glow has some internal variation instead of reading flat. */
+  .hero-glow {
+    background-image:
+      radial-gradient(72rem 48rem at 12% -12%, rgb(20 184 166 / 0.2), transparent 62%),
+      radial-gradient(56rem 40rem at 92% 2%, rgb(34 211 238 / 0.12), transparent 60%),
+      radial-gradient(44rem 32rem at 55% 45%, rgb(45 212 191 / 0.07), transparent 70%);
+  }
+
+  /* Softer echo of the hero glow, used to bookend the page at Contact so it
+     doesn't just fade to flat colour at the bottom. */
+  .section-glow {
+    background-image: radial-gradient(
+      52rem 34rem at 50% 110%,
+      rgb(20 184 166 / 0.12),
+      transparent 68%
+    );
+  }
+
+  /* Fine dot grid for surface texture. Masked to fade out before reaching the
+     text so it never competes with foreground content for contrast. */
+  .dot-grid {
+    background-image: radial-gradient(circle at 1px 1px, rgb(148 163 184 / 0.13) 1px, transparent 0);
+    background-size: 28px 28px;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 92%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 92%);
+  }
+
+  /* The centred content column shared by every section. */
+  .container-page {
+    @apply mx-auto w-full max-w-page px-6 sm:px-8;
+  }
+
+  /* Skill chips / tech tags. */
+  .chip {
+    @apply inline-flex items-center rounded-full border border-hairline bg-surface px-3 py-1
+           text-sm font-medium text-body transition-all duration-200
+           hover:border-accent/60 hover:text-heading;
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .chip:hover {
+      transform: translateY(-1px);
+    }
+  }
+
+  /* ---------------------------------------------------------------------
+     Card interactions
+     --------------------------------------------------------------------- */
+
+  /* Cursor-following accent wash. Painted as a background-image rather than an
+     overlay element, so it sits beneath the card's text automatically — no
+     wrapper div and no z-index juggling. The default custom-property values
+     park the gradient well off the card, so nothing shows until the pointer
+     actually enters and src/spotlight.js sets them. */
+  .spotlight {
+    background-image: radial-gradient(
+      circle 16rem at var(--spot-x, -20rem) var(--spot-y, -20rem),
+      rgb(20 184 166 / 0.13),
+      transparent 60%
+    );
+  }
+
+  /* Touch devices never fire mousemove, and a stray value could otherwise
+     leave the wash stuck mid-card. */
+  @media (hover: none) {
+    .spotlight {
+      background-image: none;
+    }
+  }
+
+  /* Subtle lift on hover, with an accent-tinted shadow. */
+  .card-lift {
+    transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  }
+
+  @media (hover: hover) {
+    .card-lift:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px -14px rgb(20 184 166 / 0.35);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-lift {
+      transition: border-color 200ms ease;
+    }
+    .card-lift:hover {
+      transform: none;
+    }
+  }
+}

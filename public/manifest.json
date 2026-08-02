@@ -1,0 +1,15 @@
+{
+  "short_name": "Eric",
+  "name": "Eric Yang — Software Engineer",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0b1120",
+  "background_color": "#0b1120"
+}
