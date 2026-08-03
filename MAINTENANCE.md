@@ -159,9 +159,39 @@ name, tagline, or pitch changes.
 
 ## Deployment
 
-Hosted on **AWS Amplify Hosting**, which builds from `main` and serves through
-CloudFront. Every push to `main` triggers a rebuild — there is no manual deploy
-step and no build output in the repo.
+Live at **https://ey090.com**. Hosted on **AWS Amplify Hosting**, which builds
+from `main` and serves through CloudFront. Every push to `main` triggers a
+rebuild — there is no manual deploy step and no build output in the repo.
+
+### Who does what
+
+Two providers are involved, and the split is narrower than it looks:
+
+| | Responsibility |
+| --- | --- |
+| **Cloudflare** | Domain registration and renewal; authoritative DNS. **Nothing else.** |
+| **AWS Amplify** | Build, S3 storage, CloudFront CDN, ACM certificate, response headers, redirects. |
+
+Because every DNS record is set to **DNS only** (grey cloud), Cloudflare answers
+the name lookup and then steps out — visitor traffic never passes through it.
+A request goes: browser asks Cloudflare where `ey090.com` is → Cloudflare
+resolves the apex CNAME to CloudFront IPs and answers → browser connects
+directly to CloudFront over TLS → CloudFront serves the files and applies
+`customHttp.yml`.
+
+### Account facts
+
+| | |
+| --- | --- |
+| Region | `ap-northeast-1` (Tokyo) — Amplify apps are regional and cannot be moved; in any other region the console shows no app |
+| Amplify app ID | `d6py91yy4ntgg` |
+| CloudFront target | `d1611y4y0gkyeb.cloudfront.net` |
+| Default Amplify URL | `main.d6py91yy4ntgg.amplifyapp.com` — still live, not disabled |
+
+Sign in as the IAM admin user, never the root user. Root is only needed for
+account-level tasks: changing the account email or root password, the Support
+plan, closing the account, and toggling IAM access to billing data. A zero-spend
+AWS Budget alert is configured, so any unexpected charge sends an email.
 
 Build settings, if the app is ever recreated:
 
@@ -187,12 +217,97 @@ from `fonts.googleapis.com` and framer-motion writes inline styles, so a working
 policy needs `style-src 'unsafe-inline'` plus both Google origins. Worth adding
 deliberately, not by guesswork.
 
-### Moving to a custom domain
+### DNS — the part most likely to get broken
 
-Amplify console → Hosting → Custom domains handles the certificate and DNS. The
-deployed origin is also hardcoded in `public/index.html` (`rel="canonical"`,
-`og:url`, `og:image`, `twitter:image`) because Open Graph requires absolute
-URLs — update those in the same change.
+Three records live in Cloudflare (**Websites → ey090.com → DNS → Records**).
+All three are **DNS only (grey cloud)**, TTL Auto.
+
+| Name | Type | Target | Purpose |
+| --- | --- | --- | --- |
+| `_2739509ee29e6b0d88db194fe2e27552` | CNAME | `_ce6cf1eb8c37bfa2a1ab13ad7391aa9c.jkddzztszm.acm-validations.aws` | ACM certificate validation |
+| `@` | CNAME | `d1611y4y0gkyeb.cloudfront.net` | Apex → CloudFront |
+| `www` | CNAME | `d1611y4y0gkyeb.cloudfront.net` | `www` → CloudFront |
+
+Four rules to not violate:
+
+1. **Never turn on the orange cloud.** Proxying breaks ACM certificate renewal —
+   Cloudflare answers the validation request with its own certificate, so AWS
+   never sees the proof it needs, and it fails silently with the domain stuck on
+   "pending verification". It also stacks a second CDN in front of CloudFront,
+   where Cloudflare's caching overrides the `Cache-Control` rules in
+   `customHttp.yml`. If it is ever enabled deliberately, TLS mode must be
+   **Full (strict)** — "Flexible" causes an infinite redirect loop.
+2. **Do not delete the `_2739…` validation record.** It looks like leftover
+   setup junk. ACM re-reads it to auto-renew the certificate; delete it and the
+   site loses HTTPS at renewal, roughly a year after issuance, with no warning.
+3. **Nameservers cannot move off Cloudflare.** Cloudflare Registrar requires
+   domains it registers to use its nameservers; custom nameservers are a
+   Business/Enterprise feature. Route 53 is not an option without transferring
+   the domain to another registrar first.
+4. **The apex is a CNAME, which is normally illegal.** Amplify asks for an
+   `ANAME`, which is not a real record type. Cloudflare's **CNAME flattening**
+   resolves the target before answering, which is what makes a CNAME at the zone
+   apex work. Most DNS providers cannot do this — it is a reason to stay on
+   Cloudflare DNS, or to switch the canonical URL to `www` if ever moving away.
+
+### Rewrites and redirects
+
+Configured in Amplify → Hosting → Rewrites and redirects:
+
+```json
+[
+  { "source": "https://www.ey090.com",      "status": "301",     "target": "https://ey090.com" },
+  { "source": "https://www.ey090.com/<*>",  "status": "301",     "target": "https://ey090.com/<*>" },
+  { "source": "/<*>",                        "status": "404-200", "target": "/index.html" },
+  { "source": "</^[^.]+$|\\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|ttf|map|json)$)([^.]+$)/>", "status": "200", "target": "/index.html" }
+]
+```
+
+Rules are evaluated top-down, so the two `www` redirects must stay **above** the
+catch-alls or they never match. The last two are Amplify's defaults for a
+single-page app; do not remove them.
+
+### The canonical URL is hardcoded in five places
+
+`ey090.com` (apex, no `www`) is the canonical origin. Open Graph requires
+absolute URLs — LinkedIn and Twitter will not resolve a relative path against
+the page they scraped — so the origin cannot be derived at runtime. Changing
+domains means updating all of:
+
+- `public/index.html` — `rel="canonical"`, `og:url`, `og:image`, `twitter:image`
+- `README.md` — the live link near the top
+
+**The canonical tag and the redirect target must agree.** If the 301 sends
+traffic to the apex while the canonical tag names `www`, scrapers follow the
+redirect, read a canonical pointing back where they came from, and link previews
+flap between the two URLs.
+
+### Deliberately not enabled
+
+Recorded so they don't get "fixed" later:
+
+- **AWS WAF** (offered as "firewall protections" in the Amplify console). Roughly
+  $60–200/year, against a site with no server code, no database, no forms and no
+  auth — there is no injection surface for its rules to protect. Its bot rules
+  can also block LinkedIn's and Google's crawlers, which would break the link
+  preview card and search indexing. Shield Standard already covers L3/L4 DDoS
+  free on CloudFront. Reconsider only if a backend or login is ever added.
+- **Cloudflare proxy** — see rule 1 above.
+- **A Route 53 hosted zone.** Amplify offers to create one during domain setup.
+  It would never be queried, because authoritative DNS is Cloudflare's, and it
+  bills $0.50/month for nothing.
+
+### Verifying a deploy
+
+```bash
+curl -I https://ey090.com                       # expect the customHttp.yml headers
+curl -sI https://www.ey090.com | grep -i location  # expect a 301 to the apex
+```
+
+After changing anything in the `og:` tags or `og-image.png`, run the URL through
+the [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/) to force
+a re-scrape. LinkedIn caches a preview for about a week, so a link shared before
+a deploy lands will keep showing the stale card.
 
 ---
 
