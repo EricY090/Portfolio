@@ -17,16 +17,48 @@
     <!-- Keep in sync with `canvas` in tailwind.config.js. -->
     <meta name="theme-color" content="#0b1120" />
 
-    <!-- Open Graph tags for link previews.
-         TODO: once deployed, set og:url to the canonical URL and add an
-         og:image (1200x630 PNG in public/) so shared links render a card. -->
+    <!--
+      Open Graph / Twitter tags for link previews.
+
+      og:url and og:image MUST be absolute: LinkedIn and Twitter will not
+      resolve a relative path against the page they scraped. That hardcodes the
+      deployed origin here, so moving to a custom domain is a find-and-replace
+      of the occurrences below plus rel="canonical".
+    -->
+    <link rel="canonical" href="https://main.d6py91yy4ntgg.amplifyapp.com/" />
+
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Eric Yang" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://main.d6py91yy4ntgg.amplifyapp.com/" />
     <meta property="og:title" content="Eric Yang — Software Engineer" />
     <meta
       property="og:description"
       content="Building reliable, high-impact backend systems and data infrastructure."
     />
-    <meta name="twitter:card" content="summary" />
+    <meta
+      property="og:image"
+      content="https://main.d6py91yy4ntgg.amplifyapp.com/og-image.png"
+    />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Eric Yang — Software Engineer. MEng CS @ Cornell '27, BS CS @ Stevens."
+    />
+
+    <!-- summary_large_image renders the 1.91:1 card rather than a thumbnail. -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Eric Yang — Software Engineer" />
+    <meta
+      name="twitter:description"
+      content="Building reliable, high-impact backend systems and data infrastructure."
+    />
+    <meta
+      name="twitter:image"
+      content="https://main.d6py91yy4ntgg.amplifyapp.com/og-image.png"
+    />
 
     <link rel="icon" type="image/svg+xml" href="%PUBLIC_URL%/favicon.svg" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
