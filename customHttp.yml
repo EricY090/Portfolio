@@ -1,0 +1,48 @@
+# ---------------------------------------------------------------------------
+# AWS Amplify Hosting custom response headers.
+#
+# Amplify reads this file from the repository root on every build and applies
+# the rules at the CloudFront edge. Patterns use glob syntax; when several
+# patterns match a request, the more specific one wins.
+#
+# No Content-Security-Policy is set here on purpose: index.html pulls Inter
+# from fonts.googleapis.com and framer-motion writes inline styles, so a
+# meaningful CSP needs `style-src 'unsafe-inline'` plus the two Google origins.
+# That is worth doing deliberately rather than as a side effect of this file.
+# ---------------------------------------------------------------------------
+
+customHeaders:
+  # Security headers, applied site-wide.
+  - pattern: '**'
+    headers:
+      # One year, and covers future subdomains of a custom domain. `preload` is
+      # deliberately omitted: it is only honoured after submitting the domain to
+      # hstspreload.org, and removal from that list takes months.
+      - key: 'Strict-Transport-Security'
+        value: 'max-age=31536000; includeSubDomains'
+      # Stop browsers guessing a MIME type that differs from Content-Type.
+      - key: 'X-Content-Type-Options'
+        value: 'nosniff'
+      # Nothing here is meant to be embedded in another site's frame.
+      - key: 'X-Frame-Options'
+        value: 'SAMEORIGIN'
+      # Send the full URL within the site, origin only when leaving it.
+      - key: 'Referrer-Policy'
+        value: 'strict-origin-when-cross-origin'
+      # The site requests none of these; deny them so an injected script cannot.
+      - key: 'Permissions-Policy'
+        value: 'geolocation=(), microphone=(), camera=(), interest-cohort=()'
+
+  # CRA fingerprints every filename under static/ with a content hash, so these
+  # bytes can never change behind a given URL. Cache them permanently.
+  - pattern: '/static/**'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, immutable'
+
+  # The entry point is the one file whose URL is stable while its contents
+  # change, so it must be revalidated or deploys go unseen by returning users.
+  - pattern: '/index.html'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=0, must-revalidate'
