@@ -1,4 +1,4 @@
-import { Code2, Database, Server, Sparkles, Wrench } from 'lucide-react';
+import { Cloud, Code2, Database, Server, Sparkles, Wrench } from 'lucide-react';
 import Section from './Section';
 import Reveal from './Reveal';
 import { spotlight } from '../spotlight';
@@ -6,7 +6,7 @@ import { skills, skillsNote } from '../content';
 
 // Resolves the `icon` string from content.js to a component. A new skill group
 // using a different icon must have that icon imported above and added here.
-const ICONS = { Code2, Wrench, Database, Server };
+const ICONS = { Code2, Wrench, Database, Server, Cloud };
 
 export default function Skills() {
   return (

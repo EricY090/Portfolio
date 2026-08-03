@@ -199,8 +199,6 @@ export const now = {
 /**
  * Skill groups. `icon` is a lucide-react export name; Skills.jsx resolves it
  * through a lookup table, so a new icon must also be imported there.
- *
- * TODO: add 'Azure' once the Azure deployment project ships.
  */
 export const skills = [
   {
@@ -218,6 +216,11 @@ export const skills = [
     icon: 'Database',
     items: ['MongoDB', 'SQL Server', 'PostgreSQL', 'Qdrant'],
   },
+  {
+    group: 'Cloud',
+    icon: 'Cloud',
+    items: ['AWS', 'Amplify', 'CloudFront', 'Cloudflare DNS'],
+  },
 ];
 
 /** Closing note rendered beneath the skills grid. Set to null to remove it. */
@@ -228,7 +231,7 @@ export const skillsNote = {
 
 export const footer = {
   year: new Date().getFullYear(),
-  builtWith: 'Built with React & Tailwind · Deployed on Azure',
+  builtWith: 'Built with React & Tailwind · Deployed on AWS Amplify',
 };
 
 // The page <title>, meta description, and Open Graph tags are static markup in
