@@ -2,7 +2,7 @@
 
 A single-page personal site: a digital extension of a business card.
 
-**→ [main.d6py91yy4ntgg.amplifyapp.com](https://main.d6py91yy4ntgg.amplifyapp.com/)**
+**→ [ey090.com](https://ey090.com/)**
 
 ![Eric Yang — Software Engineer. MEng CS @ Cornell '27, BS CS @ Stevens.](public/og-image.png)
 
