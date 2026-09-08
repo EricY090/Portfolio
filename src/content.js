@@ -10,7 +10,7 @@ export const profile = {
   firstName: 'Eric',
   lastName: 'Yang',
   tagline: 'Software Engineer | MEng CS @ Cornell \'27 | BS CS @ Stevens',
-  pitch: 'Building fault-tolerant, high-performance backend systems and real-time data infrastructure at scale.',
+  pitch: 'Software engineer building reliable backend systems, data infrastructure, and full-stack applications.',
 
   /**
    * Hero headshot, served from public/ at the site root.
@@ -55,6 +55,7 @@ export const primaryEmail = profile.emails[0].address;
 export const navLinks = [
   { id: 'about', label: 'About' },
   { id: 'experience', label: 'Experience' },
+  { id: 'projects', label: 'Projects' },
   { id: 'now', label: 'Now' },
   { id: 'skills', label: 'Skills' },
   { id: 'contact', label: 'Contact' },
@@ -62,8 +63,8 @@ export const navLinks = [
 
 /** About-section body copy. Rendered as one paragraph per entry. */
 export const about = [
-  'Software engineer with a B.S. in Computer Science from Stevens Institute of Technology and an incoming M.Eng student in CS at Cornell University. At Yuanta Securities, I build trading infrastructures, including real-time monitoring systems, market data pipelines spanning thousands of equities, and automation that traders and researchers depend on daily.',
-  'I care about writing software that\'s reliable, fast, and solves real problems, whether that\'s processing a decade of tick-level market data, building robust backend systems, or automating workflows that save hours of manual effort every day. I\'m drawn to backend, distributed systems, and data engineering, where performance and correctness actually matter.'
+  'Software engineer and M.Eng. Computer Science student at Cornell University, with a B.S. in Computer Science and Finance minor from Stevens Institute of Technology. Before Cornell, I worked at Yuanta Securities building production .NET applications, Python data infrastructure, and real-time systems used in quantitative trading and research.',
+  'I enjoy working across the stack—from backend services and data systems to full-stack applications—and I\'m especially interested in software where reliability, performance, and thoughtful system design matter.'
 ];
 
 /**
@@ -82,7 +83,7 @@ export const experience = [
       'Cut repeated data loading by 90%+ with a config-driven data registry and metadata-based caching for the alpha research system, enabling faster research and more efficient use of compute resources.',
       'Built a .NET real-time trading-monitoring platform (NATS + Protobuf, async state handling) and reduced high-frequency redraw overhead by ~60–80% under peak market load.',
       'Shipped a 24/7 multi-process news pipeline collecting 10,000+ articles/day into MongoDB and Qdrant for semantic search',
-      'Automated daily workflows that save several hours weekly.',
+      'Automated after-market settlement, reporting, and pre-market workflows in Python, saving roughly 30–60 minutes of manual preparation per day.',
     ],
     stack: ['Python', 'C#/.NET', 'REST APIs', 'SQL', 'NATS', 'Protobuf', 'MongoDB', 'Qdrant'],
   },
@@ -126,6 +127,62 @@ export const experience = [
   },
 ];
 
+
+/**
+ * Selected engineering projects.
+ *
+ * Keep these focused on projects that add a distinct technical story rather
+ * than duplicating work experience. A corresponding <Section id="projects">
+ * should render this data.
+ */
+export const projects = [
+  {
+    title: 'Personal Portfolio Site',
+    period: 'July 2026 — August 2026',
+    description:
+      'This website. It was built and deployed on AWS Amplify with CloudFront, TLS, custom-domain DNS, security headers, cache-control, and Git-based CI/CD.',
+    stack: ['React', 'AWS Amplify', 'CloudFront', 'Git', 'CI/CD'],
+    links: [
+      {
+        source: 'Live Site',
+        title: 'ey090.com',
+        description: 'Personal portfolio and engineering profile.',
+        url: 'https://ey090.com',
+      },
+    ],
+  },
+  {
+    title: 'SeatMap',
+    period: 'June 2025',
+    description:
+      'Built a full-stack seat-management application with Spring Boot, Vue 3, and MySQL, exposing RESTful APIs through a controller-service-repository architecture and using transactional seat assignment with Spring Data JPA/Hibernate.',
+    stack: ['Java', 'Spring Boot', 'Vue 3', 'MySQL', 'REST APIs', 'Spring Data JPA'],
+    links: [
+      {
+        source: 'GitHub',
+        title: 'SeatMap',
+        description: 'Full-stack seat-management application.',
+        url: 'https://github.com/EricY090/SeatMap',
+      },
+    ],
+  },
+  {
+    title: 'WangWang E-Commerce Platform',
+    period: 'October 2023 — May 2024',
+    description:
+      'This is the project me and my friends built for our capstone project while we were undergrads. It is a full-stack e-commerce application with JavaScript, Node.js, Express, and MongoDB, including RESTful APIs, session-based authentication, and authorization middleware.',
+    stack: ['JavaScript', 'Node.js', 'Express', 'MongoDB', 'REST APIs'],
+    links: [
+      {
+        source: 'GitHub',
+        title: 'WangWang Website',
+        description: 'Full-stack e-commerce application.',
+        url: 'https://github.com/EricY090/WangWangWebsite',
+      },
+    ],
+  },
+];
+
 /**
  * Current and upcoming work.
  *
@@ -147,7 +204,7 @@ export const now = {
   eyebrow: 'Now',
   title: "What I'm up to this fall",
   intro:
-    "Starting my M.Eng. in CS at Cornell this fall. Between coursework, side projects, and getting involved on campus, here's where my time is going.",
+    "Currently pursuing my M.Eng. in Computer Science at Cornell. Between coursework, engineering projects, and campus involvement, here's what I'm working on this fall.",
 
   // Active projects, rendered as cards.
   items: [
@@ -155,14 +212,14 @@ export const now = {
       title: 'AI on Azure',
       status: 'In progress',
       description:
-        'Deploying an open-source Llama model on Azure behind a containerized FastAPI service and a small chat UI. Should be interesting to dive into cloud provisioning, cost-aware infrastructure, and AI model deployment at scale.',
+        'Deploying an open-source Llama model on Azure behind a containerized FastAPI service and lightweight chat UI, exploring cloud provisioning, inference infrastructure, and cost-aware deployment.',
       stack: ['Azure', 'Docker', 'FastAPI', 'Python'],
     },
     {
       title: 'Contributing to nats.py',
       status: 'Planned',
       description:
-        "I relied on the NATS Python client daily building trading infrastructure, and reading its internals taught me more about async Python than any tutorial did. I want to give something back to it. Working inside a library that real systems depend on is the clearest way I know to learn how distributed-messaging software is actually maintained.",
+        "I relied on the NATS Python client while building trading infrastructure, and reading its internals taught me a great deal about async Python. I plan to contribute back by working directly with a library that production systems depend on.",
       stack: ['Python', 'NATS'],
       // Populate `links` with the pull request once one is open:
       // links: [{ source: 'GitHub', title: '...', description: '...', url: '...' }],
@@ -174,8 +231,8 @@ export const now = {
     term: 'Fall 2026',
     items: [
       { code: 'CS 5414', name: 'Distributed Computing Principles' },
-      { code: 'CS 5470', name: 'Systems for Large-Scale Machine Learning' },
       { code: 'CS 5154', name: 'Software Testing' },
+      { code: 'CS 5700', name: 'Foundations of AI Reasoning and Decision-Making' },
       { code: 'CS 7090', name: 'Computer Science Colloquium' },
       { code: 'NBA 5070', name: 'Entrepreneurship for Scientists & Engineers' },
     ],
@@ -209,17 +266,17 @@ export const skills = [
   {
     group: 'Frameworks & Tools',
     icon: 'Wrench',
-    items: ['.NET', 'Node.js', 'React', 'FastAPI', 'Docker', 'Git', 'Selenium', 'Jira'],
+    items: ['.NET', 'Node.js', 'React', 'Spring Boot', 'Spring Data JPA', 'FastAPI', 'Docker', 'Git', 'NATS'],
   },
   {
     group: 'Databases',
     icon: 'Database',
-    items: ['MongoDB', 'SQL Server', 'PostgreSQL', 'Qdrant'],
+    items: ['MongoDB', 'MySQL', 'SQL Server', 'PostgreSQL', 'Qdrant'],
   },
   {
     group: 'Cloud',
     icon: 'Cloud',
-    items: ['AWS', 'Amplify', 'CloudFront', 'Cloudflare DNS'],
+    items: ['AWS', 'Azure', 'Amplify', 'CloudFront', 'Cloudflare DNS'],
   },
 ];
 
